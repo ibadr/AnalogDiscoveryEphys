@@ -24,6 +24,7 @@
 
 #include <stdio.h>
 #include "ADSingleProcessor.h"
+#include "../WAW/waw.h"
 
 //If the processor uses a custom editor, it needs its header to instantiate it
 #include "ADSingleEditor.h"

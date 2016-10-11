@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "ADSingleEditor.h"
 #include "ADSingleProcessor.h"
+#include "../WAW/waw.h"
 
 ADSingleEditor::ADSingleEditor(GenericProcessor* parentNode, bool useDefaultParameterEditors = true)
 	: GenericEditor(parentNode, useDefaultParameterEditors)
@@ -54,6 +55,7 @@ void ADSingleEditor::buttonEvent(Button* button)
 		//a typical  example:
 		if (button->getToggleState()) //Button is pressed
 		{
+			std::cout << "Found " << WAW::instance().enumDevices(enumfilterAll) << std::endl;
 			getProcessor()->setParameter(0, 1);
 		}
 		else
