@@ -28,13 +28,15 @@ ADSingleEditor::ADSingleEditor(GenericProcessor* parentNode, bool useDefaultPara
 	: GenericEditor(parentNode, useDefaultParameterEditors)
 {
 	desiredWidth = 230;
+	_deviceOpen = false;
 
 	initEditor();
 	buttonEvent(_refreshButton); // emulate refresh button press after construction
 }
 
 ADSingleEditor::~ADSingleEditor() {
-
+		if (_deviceOpen)
+			WAW::instance().closeDevice(0);
 }
 
 void ADSingleEditor::initEditor() {
@@ -42,13 +44,13 @@ void ADSingleEditor::initEditor() {
 	ADSingleProcessor * node = static_cast<ADSingleProcessor*>(this->getProcessor());
 
 	_refreshButton = new UtilityButton("REFRESH", Font(5, Font::plain));
-	_refreshButton->setBounds(145, 31, 70, 20); //Set position and size (X, Y, XSize, YSize)
+	_refreshButton->setBounds(150, 31, 60, 20); //Set position and size (X, Y, XSize, YSize)
 	_refreshButton->setTooltip("Scan for and open first device.");
 	_refreshButton->addListener(this);
 	addAndMakeVisible(_refreshButton);
 
 	_deviceLabel = new Label("device label", "No devices!");
-	_deviceLabel->setBounds(10, 31, 80, 20);
+	_deviceLabel->setBounds(10, 31, 150, 20);
 	_deviceLabel->setFont(Font("Small Text", 11, Font::plain));
 	_deviceLabel->setColour(Label::textColourId, Colours::darkgrey);
 	addAndMakeVisible(_deviceLabel);
@@ -114,7 +116,18 @@ void ADSingleEditor::labelTextChanged(Label* label) {
 void ADSingleEditor::buttonEvent(Button* button) {
 	if (button == _refreshButton) {
 		int count = WAW::instance().enumDevices(enumfilterAll);
-		_deviceLabel->setText(String(count),NotificationType::dontSendNotification);
+		// std::cout << "Found " << count << std::endl;
+		if (count > 0 && !_deviceOpen)
+				_deviceOpen = WAW::instance().openDevice(0);
+		if (count < 1) {
+			_deviceLabel->setText("No devices!",NotificationType::dontSendNotification);
+			return;
+		}
+		if (_deviceOpen) {
+			char deviceName[32];
+			FDwfEnumDeviceName(0, deviceName);
+			_deviceLabel->setText(String(deviceName),NotificationType::dontSendNotification);
+		}
 	}
 
 }

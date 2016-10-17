@@ -70,6 +70,8 @@ private:
 	ScopedPointer<Label> _scaleFLabel;
 	ScopedPointer<Label> _scaleFValue;
 
+	bool _deviceOpen;
+
 	void initEditor();
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ADSingleEditor);
