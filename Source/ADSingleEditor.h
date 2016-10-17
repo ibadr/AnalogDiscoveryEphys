@@ -33,9 +33,7 @@ ADSingle Editor
 
 */
 
-class ADSingleEditor : public GenericEditor	//Generic Editor adds listeners for buttons and sliders.
-											//Other possible JUCE controls can be added and listened by inheriting from the appropiate XXX:Listener class
-											//See JUCE documentation to find other available controls.
+class ADSingleEditor : public GenericEditor, public Label::Listener
 {
 public:
 
@@ -45,11 +43,8 @@ public:
 	/** The class destructor, used to deallocate memory */
 	~ADSingleEditor();
 
-	/**
-	Unlike processors, which have a minimum set of required methods,
-	editor are completely customized. There are still a couple of
-	sometimes useful overloaded methods, which will appear here
-	*/
+	/** Label listener callback, called when a label is changed. */
+	void labelTextChanged(Label* label);
 
 	/** This method executes whenever a custom button is pressed */
 	void buttonEvent(Button* button);
@@ -67,14 +62,15 @@ public:
 
 
 private:
-
-	/**
-	Here would be all the required internal variables.
-	In this case, we have a single button.
-	*/
-
 	//Always use JUCE RAII classes instead of pure pointers.
-	ScopedPointer<Button> exampleButton;
+	ScopedPointer<Button> _refreshButton;
+	ScopedPointer<Label> _deviceLabel;
+	ScopedPointer<Label> _sampleRateLabel;
+	ScopedPointer<Label> _sampleRateValue;
+	ScopedPointer<Label> _scaleFLabel;
+	ScopedPointer<Label> _scaleFValue;
+
+	void initEditor();
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ADSingleEditor);
 };

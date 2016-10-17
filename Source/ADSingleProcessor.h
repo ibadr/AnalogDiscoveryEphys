@@ -88,6 +88,8 @@ public:
 		are modified only through this method while data acquisition is active. */
     void setParameter(int parameterIndex, float newValue);
 
+    float getParameter(int parameterIndex);
+
 	/** Optional method called every time the signal chain is refreshed or changed in any way.
 
 		Allows the processor to handle variations in the channel configuration or any other parameter
@@ -98,13 +100,8 @@ public:
 	//void updateSettings();
 
 private:
-
-    // private members and methods go here
-    //
-    // e.g.:
-    //
-    // float threshold;
-    // bool state;
+    float _samprate;
+    float _scaleF;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ADSingleProcessor);
 

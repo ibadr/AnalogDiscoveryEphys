@@ -30,46 +30,60 @@
 #include "ADSingleEditor.h"
 
 ADSingleProcessor::ADSingleProcessor()
-    : GenericProcessor("ADSingle") //, threshold(200.0), state(true)
+    : GenericProcessor("ADSingle"), _samprate(20000.0)
 {
-	//Without a custom editor, generic parameter controls can be added
-    //parameters.add(Parameter("thresh", 0.0, 500.0, 200.0, 0));
-
+    parameters.add(Parameter("SampleRate", 1024.0, 50000.0, 20000.0, 0));
+    parameters.add(Parameter("Scaling", 0.0, 1.0/0.0, 1.0, 1));
+    setParameter(0, _samprate);
 }
 
-ADSingleProcessor::~ADSingleProcessor()
-{
+ADSingleProcessor::~ADSingleProcessor() {
 
 }
 
 /**
 	If the processor uses a custom editor, this method must be present.
 */
-AudioProcessorEditor* ADSingleProcessor::createEditor()
-{
-	editor = new ADSingleEditor(this, true);
-
-	//std::cout << "Creating editor." << std::endl;
+AudioProcessorEditor* ADSingleProcessor::createEditor() {
+	editor = new ADSingleEditor(this, false);
 
 	return editor;
 }
 
-
-void ADSingleProcessor::setParameter(int parameterIndex, float newValue)
-{
-
-    //Parameter& p =  parameters.getReference(parameterIndex);
-    //p.setValue(newValue, 0);
-
-    //threshold = newValue;
-
-    //std::cout << float(p[0]) << std::endl;
-    editor->updateParameterButtons(parameterIndex);
+float ADSingleProcessor::getParameter(int parameterIndex) {
+  float val;
+  switch (parameterIndex) {
+    case 0:
+      val = _samprate;
+      break;
+    case 1:
+      val = _scaleF;
+      break;
+    default:
+      val = 0.0;
+      break;
+  }
+  return val;
 }
 
-void ADSingleProcessor::process(AudioSampleBuffer& buffer,
-                               MidiBuffer& events)
-{
+void ADSingleProcessor::setParameter(int parameterIndex, float newValue) {
+  Parameter& p =  parameters.getReference(parameterIndex);
+  p.setValue(newValue, 0);
+
+  switch (parameterIndex) {
+    case 0:
+      _samprate = newValue;
+      break;
+    case 1:
+      _scaleF = newValue;
+      break;
+    default:
+      break;
+  }
+  // std::cout << float(p[0]) << std::endl;
+}
+
+void ADSingleProcessor::process(AudioSampleBuffer& buffer,MidiBuffer& events) {
 	/**
 	Generic structure for processing buffer data
 	*/
@@ -101,26 +115,4 @@ void ADSingleProcessor::process(AudioSampleBuffer& buffer,
 
 		*/
 	}
-
-	/** Simple example that creates an event when the first channel goes under a negative threshold
-
-    for (int i = 0; i < getNumSamples(channels[0]->sourceNodeId); i++)
-    {
-        if ((*buffer.getReadPointer(0, i) < -threshold) && !state)
-        {
-
-	        // generate midi event
-            addEvent(events, TTL, i);
-
-	        state = true;
-
-	    } else if ((*buffer.getReadPointer(0, i) > -threshold + bufferZone)  && state)
-        {
-            state = false;
-        }
-
-	}
-	*/
-
-
 }

@@ -24,44 +24,97 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ADSingleProcessor.h"
 #include "../WAW/waw.h"
 
-ADSingleEditor::ADSingleEditor(GenericProcessor* parentNode, bool useDefaultParameterEditors = true)
+ADSingleEditor::ADSingleEditor(GenericProcessor* parentNode, bool useDefaultParameterEditors = false)
 	: GenericEditor(parentNode, useDefaultParameterEditors)
 {
-	//Most used buttons are UtilityButton, which shows a simple button with text and ElectrodeButton, which is an on-off button which displays a channel.
-	exampleButton = new UtilityButton("Button text", Font("Default", 15, Font::plain));
-	exampleButton->setBounds(10, 30, 100, 60); //Set position and size (X, Y, XSize, YSize)
-	exampleButton->addListener(this); //Specify which class will implement the listener methods, in the case of editors, always make the editor the listener
-	exampleButton->setClickingTogglesState(true); //True for a on-off toggleable button, false for a single-click monostable button
-	exampleButton->setTooltip("Mouseover tooltip text");
-	addAndMakeVisible(exampleButton);
+	desiredWidth = 230;
+
+	initEditor();
+	buttonEvent(_refreshButton); // emulate refresh button press after construction
 }
 
-ADSingleEditor::~ADSingleEditor()
-{
+ADSingleEditor::~ADSingleEditor() {
 
 }
 
-/**
-The listener methods that reacts to the button click. The same method is called for all buttons
-on the editor, so the button variable, which cointains a pointer to the button that called the method
-has to be checked to know which function to perform.
-*/
-void ADSingleEditor::buttonEvent(Button* button)
-{
-	if (button == exampleButton)
+void ADSingleEditor::initEditor() {
+
+	ADSingleProcessor * node = static_cast<ADSingleProcessor*>(this->getProcessor());
+
+	_refreshButton = new UtilityButton("REFRESH", Font(5, Font::plain));
+	_refreshButton->setBounds(145, 31, 70, 20); //Set position and size (X, Y, XSize, YSize)
+	_refreshButton->setTooltip("Scan for and open first device.");
+	_refreshButton->addListener(this);
+	addAndMakeVisible(_refreshButton);
+
+	_deviceLabel = new Label("device label", "No devices!");
+	_deviceLabel->setBounds(10, 31, 80, 20);
+	_deviceLabel->setFont(Font("Small Text", 11, Font::plain));
+	_deviceLabel->setColour(Label::textColourId, Colours::darkgrey);
+	addAndMakeVisible(_deviceLabel);
+
+	_sampleRateLabel = new Label("sample rate label", "Sample rate:");
+	_sampleRateLabel->setBounds(10, 65, 80, 20);
+	_sampleRateLabel->setFont(Font("Small Text", 11, Font::plain));
+	_sampleRateLabel->setColour(Label::textColourId, Colours::darkgrey);
+	addAndMakeVisible(_sampleRateLabel);
+
+	_sampleRateValue = new Label("sample rate value", String(node->getParameter(0)));
+	_sampleRateValue->setBounds(100, 65, 50, 20);
+	_sampleRateValue->setFont(Font("Default", 11, Font::plain));
+	_sampleRateValue->setColour(Label::textColourId, Colours::white);
+	_sampleRateValue->setColour(Label::backgroundColourId, Colours::grey);
+	_sampleRateValue->setEditable(true);
+	_sampleRateValue->addListener(this);
+	_sampleRateValue->setTooltip("Set the sample rate for the selected channels");
+	addAndMakeVisible(_sampleRateValue);
+
+	_scaleFLabel = new Label("scaling factor label", "Scaling:");
+	_scaleFLabel->setBounds(10, 90, 80, 20);
+	_scaleFLabel->setFont(Font("Small Text", 11, Font::plain));
+	_scaleFLabel->setColour(Label::textColourId, Colours::darkgrey);
+	addAndMakeVisible(_scaleFLabel);
+
+	_scaleFValue = new Label("scaling factor value", String(1.0));
+	_scaleFValue->setBounds(100, 90, 50, 20);
+	_scaleFValue->setFont(Font("Default", 11, Font::plain));
+	_scaleFValue->setColour(Label::textColourId, Colours::white);
+	_scaleFValue->setColour(Label::backgroundColourId, Colours::grey);
+	_scaleFValue->setEditable(true);
+	_scaleFValue->addListener(this);
+	_scaleFValue->setTooltip("Set the scaling factor for all channels");
+	addAndMakeVisible(_scaleFValue);
+}
+
+void ADSingleEditor::labelTextChanged(Label* label) {
+	ADSingleProcessor * node = static_cast<ADSingleProcessor*>(this->getProcessor());
+	// if (label == _scaleFValue)
+	// {
+	// 	_node->setDefaultBitVolts(label->getText().getFloatValue());
+	// }
+	// else
+	if (label == _sampleRateValue)
 	{
-		//Do Stuff
+		float v = label->getText().getFloatValue();
+		if (v < 1024.0) {
+			CoreServices::sendStatusMessage("Please set the sample rate to at least 1024.0 Hz.");
+			label->setText(String(node->getDefaultSampleRate()), NotificationType::dontSendNotification);
+			return;
+		}
+		// _node->setDefaultSampleRate(v);
+	}
+	// else if (label == _setChanNumValue)
+	// {
+	// 	int v = label->getText().getIntValue();
+	// 	_node->setNumChannels(v);
+	// }
+	return;
+}
 
-		//a typical  example:
-		if (button->getToggleState()) //Button is pressed
-		{
-			std::cout << "Found " << WAW::instance().enumDevices(enumfilterAll) << std::endl;
-			getProcessor()->setParameter(0, 1);
-		}
-		else
-		{
-			getProcessor()->setParameter(0, 0);
-		}
+void ADSingleEditor::buttonEvent(Button* button) {
+	if (button == _refreshButton) {
+		int count = WAW::instance().enumDevices(enumfilterAll);
+		_deviceLabel->setText(String(count),NotificationType::dontSendNotification);
 	}
 
 }
