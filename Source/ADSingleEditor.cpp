@@ -21,10 +21,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "ADSingleEditor.h"
-#include "ADSingleProcessor.h"
+#include "ADSingleThread.h"
 #include "../WAW/waw.h"
 
-ADSingleEditor::ADSingleEditor(GenericProcessor* parentNode, bool useDefaultParameterEditors = false)
+ADSingleEditor::ADSingleEditor(GenericProcessor* parentNode,ADSingleThread* ads, bool useDefaultParameterEditors = false)
 	: GenericEditor(parentNode, useDefaultParameterEditors)
 {
 	desiredWidth = 230;
@@ -41,7 +41,7 @@ ADSingleEditor::~ADSingleEditor() {
 
 void ADSingleEditor::initEditor() {
 
-	ADSingleProcessor * node = static_cast<ADSingleProcessor*>(this->getProcessor());
+	// ADSingleThread * node = static_cast<ADSingleThread*>(this->getProcessor());
 
 	_refreshButton = new UtilityButton("REFRESH", Font(5, Font::plain));
 	_refreshButton->setBounds(150, 31, 60, 20); //Set position and size (X, Y, XSize, YSize)
@@ -61,7 +61,7 @@ void ADSingleEditor::initEditor() {
 	_sampleRateLabel->setColour(Label::textColourId, Colours::darkgrey);
 	addAndMakeVisible(_sampleRateLabel);
 
-	_sampleRateValue = new Label("sample rate value", String(node->getParameter(0)));
+	_sampleRateValue = new Label("sample rate value", String(25000/*node->getParameter(0)*/));
 	_sampleRateValue->setBounds(100, 65, 50, 20);
 	_sampleRateValue->setFont(Font("Default", 11, Font::plain));
 	_sampleRateValue->setColour(Label::textColourId, Colours::white);
@@ -89,7 +89,7 @@ void ADSingleEditor::initEditor() {
 }
 
 void ADSingleEditor::labelTextChanged(Label* label) {
-	ADSingleProcessor * node = static_cast<ADSingleProcessor*>(this->getProcessor());
+	// ADSingleThread * node = static_cast<ADSingleThread*>(this->getProcessor());
 	// if (label == _scaleFValue)
 	// {
 	// 	_node->setDefaultBitVolts(label->getText().getFloatValue());
@@ -100,7 +100,7 @@ void ADSingleEditor::labelTextChanged(Label* label) {
 		float v = label->getText().getFloatValue();
 		if (v < 1024.0) {
 			CoreServices::sendStatusMessage("Please set the sample rate to at least 1024.0 Hz.");
-			label->setText(String(node->getDefaultSampleRate()), NotificationType::dontSendNotification);
+			label->setText(String(25000/*node->getDefaultSampleRate()*/), NotificationType::dontSendNotification);
 			return;
 		}
 		// _node->setDefaultSampleRate(v);

@@ -25,6 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <EditorHeaders.h>
 
+class ADSingleThread;
+
 /**
 
 ADSingle Editor
@@ -38,7 +40,7 @@ class ADSingleEditor : public GenericEditor, public Label::Listener
 public:
 
 	/** The class constructor, used to initialize any members. */
-	ADSingleEditor(GenericProcessor* parentNode, bool useDefaultParameterEditors);
+	ADSingleEditor(GenericProcessor* parentNode,ADSingleThread*, bool useDefaultParameterEditors);
 
 	/** The class destructor, used to deallocate memory */
 	~ADSingleEditor();
