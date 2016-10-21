@@ -30,9 +30,9 @@
 #include "ADSingleEditor.h"
 
 ADSingleThread::ADSingleThread(SourceNode* sn)
-    : DataThread(sn), _samprate(20000.0) {
-      dataBuffer = new DataBuffer(16, 1600*3);
-      eventCode = 0;
+    : DataThread(sn), _chCount(1), _thisSample(NULL), _theSourceNode(sn) {
+  dataBuffer = new DataBuffer(4, 1600*3); // TODO what is maximum channel count? 4?
+  eventCode = 0;
 }
 
 ADSingleThread::~ADSingleThread() {
@@ -44,56 +44,116 @@ GenericEditor* ADSingleThread::createEditor(SourceNode* sn) {
 }
 
 bool ADSingleThread::foundInputSource() {
+  HDWF hdwf = WAW::instance().hdwfDevice(0);
+  if(hdwf > 0) {
+    BOOL succ; int chCount;
+    succ = FDwfAnalogInChannelCount(hdwf, &chCount);
+    if (succ<1) return false;
+    _chCount = chCount;
+
+    // For testing purposes only, enable a sine out on W1
+    int ch = 0;
+    FDwfAnalogOutNodeEnableSet(hdwf,ch,AnalogOutNodeCarrier,1);
+    FDwfAnalogOutNodeFunctionSet(hdwf,ch,AnalogOutNodeCarrier,funcSine);
+    FDwfAnalogOutNodeFrequencySet(hdwf,ch,AnalogOutNodeCarrier,7.0);
+    FDwfAnalogOutNodeAmplitudeSet(hdwf,ch,AnalogOutNodeCarrier,1.0);
+    FDwfAnalogOutNodeOffsetSet(hdwf,ch,AnalogOutNodeCarrier,0.0);
+    FDwfAnalogOutConfigure(hdwf,ch,1);
+
     return true;
+  }
+  return false;
 }
 
 int ADSingleThread::getNumChannels() {
-    return 16;
+  return _chCount;
 }
 
 float ADSingleThread::getSampleRate() {
-    return 28000.0f;
+  ADSingleEditor * edt = (ADSingleEditor *) _theSourceNode->editor.get();
+  return edt->sampleRate();
 }
 
 float ADSingleThread::getBitVolts(Channel* chan) {
-    return 0.0305f;
+    return 1.0f;
 }
 
 int ADSingleThread::getNumHeadstageOutputs() {
-  return 3;
+  return _chCount;
 }
 
 bool ADSingleThread::startAcquisition() {
-    startThread();
-    return true;
+  ADSingleEditor * edt = (ADSingleEditor *) _theSourceNode->editor.get();
+  HDWF hdwf = WAW::instance().hdwfDevice(0);
+  bool isSuccess = false;
+  BOOL succ;
+  for(int tmp=0; tmp<1; ++tmp) { // so that 'break' works
+    if(hdwf > 0) {
+      succ = FDwfAnalogInFrequencySet(hdwf,edt->sampleRate());
+      isSuccess = succ > 0; if(!isSuccess) break;
+      succ = FDwfAnalogInAcquisitionModeSet(hdwf,acqmodeRecord);
+      isSuccess = succ > 0;  if(!isSuccess) break;
+      int chCount;
+      succ = FDwfAnalogInChannelCount(hdwf, &chCount);
+      isSuccess = succ > 0;  if(!isSuccess) break;
+      for(int ch = 0; ch < chCount; ++ch) {
+        succ = FDwfAnalogInChannelEnableSet(hdwf,ch,1);
+        isSuccess = succ > 0;  if(!isSuccess) break;
+        succ = FDwfAnalogInChannelFilterSet(hdwf,ch,filterAverage);
+        isSuccess = succ > 0;  if(!isSuccess) break;
+      }
+      succ = FDwfAnalogInRecordLengthSet(hdwf,0.0); // record indefinitely
+      isSuccess = succ > 0; if(!isSuccess) break;
+      succ = FDwfAnalogInConfigure(hdwf,0,1); // start acquistion
+      isSuccess = succ > 0; if(!isSuccess) break;
+      _chCount = chCount;
+
+      delete [] _thisSample;
+      _thisSample = new float[_chCount];
+
+      startThread();
+      return isSuccess;
+    }
+  }
+  return isSuccess;
 }
 
 bool ADSingleThread::stopAcquisition() {
-    if (isThreadRunning())
-    {
-        signalThreadShouldExit();
-    }
-
-    return true;
+  HDWF hdwf = WAW::instance().hdwfDevice(0);
+  FDwfAnalogInConfigure(hdwf,0,1);
+  if (isThreadRunning()) {
+      signalThreadShouldExit();
+  }
+  return true;
 }
 
 bool ADSingleThread::updateBuffer() {
-  int chan = 0;
+  ADSingleEditor * edt = (ADSingleEditor *) _theSourceNode->editor.get();
+  float scale = edt->scaleF();
 
-  for (int n = 0; n < 1600; n++)
-  {
-    thisSample[chan] = n;
+  HDWF hdwf = WAW::instance().hdwfDevice(0);
+  DwfState status; BOOL succ;
+  succ = FDwfAnalogInStatus(hdwf,1.0,&status); // read data
+  if(succ<1) return false;
 
-    if (chan == 15)
-    {
-        timestamp++;
-        dataBuffer->addToBuffer(thisSample, &timestamp, &eventCode, 1);
-        chan = 0;
+  if (status == DwfStateConfig || status == DwfStatePrefill || status == DwfStateArmed)
+    return false;
+  int cAvailable,cLost,cCorrupted;
+  succ = FDwfAnalogInStatusRecord(hdwf,&cAvailable,&cLost,&cCorrupted);
+  if (succ<1) return false;
+  if (cAvailable==0) return false;
+
+  double chVoltDataBuf[_chCount][10000];
+  for(int ch = 0; ch < _chCount; ++ch) {
+    succ = FDwfAnalogInStatusData(hdwf,ch,chVoltDataBuf[ch],cAvailable);
+    if (succ<1) return false;
+  }
+  for (int n = 0; n < cAvailable; ++n) {
+    for(int ch = 0; ch < _chCount; ++ch) {
+      _thisSample[ch] = chVoltDataBuf[ch][n]*scale;
     }
-    else
-    {
-        chan++;
-    }
+    timestamp++;
+    dataBuffer->addToBuffer(_thisSample, &timestamp, &eventCode, 1);
   }
   return true;
 }

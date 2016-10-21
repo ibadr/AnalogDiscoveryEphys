@@ -62,6 +62,9 @@ public:
 	*/
 	//void updateSettings();
 
+	float sampleRate();
+	float scaleF();
+
 
 private:
 	//Always use JUCE RAII classes instead of pure pointers.

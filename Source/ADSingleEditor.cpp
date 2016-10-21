@@ -113,6 +113,14 @@ void ADSingleEditor::labelTextChanged(Label* label) {
 	return;
 }
 
+float ADSingleEditor::sampleRate() {
+	return _sampleRateValue->getText().getFloatValue();
+}
+
+float ADSingleEditor::scaleF() {
+	return _scaleFValue->getText().getFloatValue();
+}
+
 void ADSingleEditor::buttonEvent(Button* button) {
 	if (button == _refreshButton) {
 		int count = WAW::instance().enumDevices(enumfilterAll);

@@ -54,10 +54,9 @@ public:
 	GenericEditor* createEditor(SourceNode* sn);
 
 private:
-    float _samprate;
-    float _scaleF;
-
-    float thisSample[16];
+    int _chCount;
+    float * _thisSample;
+    SourceNode * _theSourceNode;
 
     bool updateBuffer();
 
