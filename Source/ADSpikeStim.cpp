@@ -24,6 +24,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ADSpikeStimEditor.h"
 #include "../WAW/waw.h"
 
+#include "../../Processors/Visualization/SpikeObject.h"
+
 ADSpikeStim::ADSpikeStim() : GenericProcessor("ADSpikeStim"), _deviceOpen(false) {
 
 }
@@ -62,6 +64,24 @@ bool ADSpikeStim::isReady() {
   return _deviceOpen;
 }
 
-void ADSpikeStim::process(AudioSampleBuffer& buffer, MidiBuffer& events) {
+void ADSpikeStim::process(AudioSampleBuffer& /*buffer*/, MidiBuffer& events) {
+  checkForEvents(events); // automatically calls handleEvent
+  // we're not interested in processing the continuous data in the 'buffer', only the spike events
+}
 
+void ADSpikeStim::handleEvent(int eventType, MidiMessage& event, int /*sampleNum*/) {
+  if (eventType == SPIKE) {
+    const uint8_t* dataptr = event.getRawData();
+    int bufferSize = event.getRawDataSize();
+    if (bufferSize > 0) {
+      SpikeObject newSpike;
+      bool isValid = unpackSpike(&newSpike, dataptr, bufferSize);
+      if (isValid) {
+        int hdwf = WAW::instance().hdwfDevice(0);
+        if (newSpike.channel == 0 && newSpike.sortedId == 1) {
+          FDwfAnalogOutConfigure(hdwf, 0, true); // run stim once
+        }
+      }
+    }
+  }
 }

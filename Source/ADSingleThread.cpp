@@ -142,6 +142,7 @@ bool ADSingleThread::updateBuffer() {
     return false;
   int cAvailable,cLost,cCorrupted;
   succ = FDwfAnalogInStatusRecord(hdwf,&cAvailable,&cLost,&cCorrupted);
+  // std::cout << cAvailable << " " << cLost << " " << cCorrupted << std::endl;
   if (succ<1) return false;
   if (cAvailable==0) return false;
 
