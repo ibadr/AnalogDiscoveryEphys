@@ -29,9 +29,11 @@
 //If the processor uses a custom editor, it needs its header to instantiate it
 #include "ADSingleEditor.h"
 
+const int MAX_CH_COUNT = 4; // TODO what is maximum channel count? 4?
+
 ADSingleThread::ADSingleThread(SourceNode* sn)
     : DataThread(sn), _chCount(1), _thisSample(NULL), _theSourceNode(sn) {
-  dataBuffer = new DataBuffer(4, 1600*3); // TODO what is maximum channel count? 4?
+  dataBuffer = new DataBuffer(MAX_CH_COUNT, 1600*3);
   eventCode = 0;
 }
 
@@ -143,7 +145,7 @@ bool ADSingleThread::updateBuffer() {
   if (succ<1) return false;
   if (cAvailable==0) return false;
 
-  double chVoltDataBuf[_chCount][10000];
+  double chVoltDataBuf[MAX_CH_COUNT][10000];
   for(int ch = 0; ch < _chCount; ++ch) {
     succ = FDwfAnalogInStatusData(hdwf,ch,chVoltDataBuf[ch],cAvailable);
     if (succ<1) return false;
