@@ -50,7 +50,7 @@ public:
   AudioProcessorEditor* createEditor();
 
   /** Optional method that informs the GUI if the processor is ready to function. If false acquisition cannot start. Defaults to true */
-  //bool isReady();
+  bool isReady();
 
   void process(AudioSampleBuffer& buffer, MidiBuffer& events);
 
@@ -70,8 +70,9 @@ public:
   //void updateSettings();
 
 private:
+  bool _deviceOpen;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ADSpikeStim);
+  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ADSpikeStim);
 
 };
 

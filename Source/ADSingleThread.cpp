@@ -54,13 +54,13 @@ bool ADSingleThread::foundInputSource() {
     _chCount = chCount;
 
     // For testing purposes only, enable a sine out on W1
-    int ch = 0;
-    FDwfAnalogOutNodeEnableSet(hdwf,ch,AnalogOutNodeCarrier,1);
-    FDwfAnalogOutNodeFunctionSet(hdwf,ch,AnalogOutNodeCarrier,funcSine);
-    FDwfAnalogOutNodeFrequencySet(hdwf,ch,AnalogOutNodeCarrier,7.0);
-    FDwfAnalogOutNodeAmplitudeSet(hdwf,ch,AnalogOutNodeCarrier,1.0);
-    FDwfAnalogOutNodeOffsetSet(hdwf,ch,AnalogOutNodeCarrier,0.0);
-    FDwfAnalogOutConfigure(hdwf,ch,1);
+    // int ch = 0;
+    // FDwfAnalogOutNodeEnableSet(hdwf,ch,AnalogOutNodeCarrier,1);
+    // FDwfAnalogOutNodeFunctionSet(hdwf,ch,AnalogOutNodeCarrier,funcSine);
+    // FDwfAnalogOutNodeFrequencySet(hdwf,ch,AnalogOutNodeCarrier,7.0);
+    // FDwfAnalogOutNodeAmplitudeSet(hdwf,ch,AnalogOutNodeCarrier,1.0);
+    // FDwfAnalogOutNodeOffsetSet(hdwf,ch,AnalogOutNodeCarrier,0.0);
+    // FDwfAnalogOutConfigure(hdwf,ch,1);
 
     return true;
   }
