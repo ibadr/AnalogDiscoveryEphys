@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <PluginInfo.h>
 #include "Source/ADSingleThread.h"
+#include "Source/ADSpikeStim.h"
 #include <string>
 #ifdef WIN32
 #include <Windows.h>
@@ -33,10 +34,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace Plugin;
 //Number of plugins defined on the library. Can be of different types (Processors, RecordEngines, etc...)
-#define NUM_PLUGINS 1
+#define NUM_PLUGINS 2
 
-extern "C" EXPORT void getLibInfo(Plugin::LibraryInfo* info)
-{
+extern "C" EXPORT void getLibInfo(Plugin::LibraryInfo* info) {
 	info->apiVersion = PLUGIN_API_VER; /*API version, defined by the GUI source.
 	Should not be changed to ensure it is always equal to the one used in the latest codebase. The GUI refueses to load plugins with mismatched API versions */
 	info->name = "AnalogDiscovery"; //Name of the Library, used only for information
@@ -44,22 +44,26 @@ extern "C" EXPORT void getLibInfo(Plugin::LibraryInfo* info)
 	info->numPlugins = NUM_PLUGINS;
 }
 
-extern "C" EXPORT int getPluginInfo(int index, Plugin::PluginInfo* info)
-{
-	switch (index)
-	{
-	//one case per plugin. This example is for a processor which connects directly to the signal chain
-	case 0:
-		info->type = Plugin::DatathreadPlugin; //Type of plugin. See "Source/Processors/PluginManager/OpenEphysPlugin.h" for complete info about the different type structures
-		//For processor
-		info->dataThread.name = "ADSingle"; //Processor name shown in the GUI
-		// info->processor.type = Plugin::SourceProcessor; //Type of processor. Can be FilterProcessor, SourceProcessor, SinkProcessor or UtilityProcessor. Specifies where on the processor list will appear
-		info->dataThread.creator = &(Plugin::createDataThread<ADSingleThread>);
-		break;
-	default:
-		return -1;
-		break;
-	}
+extern "C" EXPORT int getPluginInfo(int index, Plugin::PluginInfo* info) {
+	switch (index) {
+		//one case per plugin
+		case 0:
+			info->type = Plugin::DatathreadPlugin;
+			//For dataThread
+			info->dataThread.name = "ADSingle";
+			info->dataThread.creator = &(Plugin::createDataThread<ADSingleThread>);
+			break;
+		case 1:
+			info->type = Plugin::ProcessorPlugin; //Type of plugin. See "Source/Processors/PluginManager/OpenEphysPlugin.h" for complete info about the different type structures
+			//For processor
+			info->processor.name = "ADSpikeStim"; //Processor name shown in the GUI
+			info->processor.type = Plugin::SinkProcessor; //Type of processor. Can be FilterProcessor, SourceProcessor, SinkProcessor or UtilityProcessor. Specifies where on the processor list will appear
+			info->processor.creator = &(Plugin::createProcessor<ADSpikeStim>);
+			break;
+		default:
+			return -1;
+			break;
+		}
 	return 0;
 }
 
