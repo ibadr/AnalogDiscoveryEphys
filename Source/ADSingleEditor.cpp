@@ -40,14 +40,12 @@ ADSingleEditor::~ADSingleEditor() {
 }
 
 void ADSingleEditor::initEditor() {
-
-	// ADSingleThread * node = static_cast<ADSingleThread*>(this->getProcessor());
-
 	_refreshButton = new UtilityButton("REFRESH", Font(5, Font::plain));
 	_refreshButton->setBounds(150, 31, 60, 20); //Set position and size (X, Y, XSize, YSize)
 	_refreshButton->setTooltip("Scan for and open first device.");
 	_refreshButton->addListener(this);
 	addAndMakeVisible(_refreshButton);
+	_inputComponents.push_back(_refreshButton);
 
 	_deviceLabel = new Label("device label", "No devices!");
 	_deviceLabel->setBounds(10, 31, 150, 20);
@@ -70,6 +68,7 @@ void ADSingleEditor::initEditor() {
 	_sampleRateValue->addListener(this);
 	_sampleRateValue->setTooltip("Set the sample rate for the selected channels");
 	addAndMakeVisible(_sampleRateValue);
+	_inputComponents.push_back(_sampleRateValue);
 
 	_scaleFLabel = new Label("scaling factor label", "Scaling:");
 	_scaleFLabel->setBounds(10, 90, 80, 20);
@@ -86,31 +85,18 @@ void ADSingleEditor::initEditor() {
 	_scaleFValue->addListener(this);
 	_scaleFValue->setTooltip("Set the scaling factor for all channels");
 	addAndMakeVisible(_scaleFValue);
+	_inputComponents.push_back(_scaleFValue);
 }
 
 void ADSingleEditor::labelTextChanged(Label* label) {
-	// ADSingleThread * node = static_cast<ADSingleThread*>(this->getProcessor());
-	// if (label == _scaleFValue)
-	// {
-	// 	_node->setDefaultBitVolts(label->getText().getFloatValue());
-	// }
-	// else
 	if (label == _sampleRateValue)
 	{
 		float v = label->getText().getFloatValue();
 		if (v < 1024.0) {
 			CoreServices::sendStatusMessage("Please set the sample rate to at least 1024.0 Hz.");
-			label->setText(String(25000/*node->getDefaultSampleRate()*/), NotificationType::dontSendNotification);
-			return;
+			label->setText(String(25000), NotificationType::dontSendNotification);
 		}
-		// _node->setDefaultSampleRate(v);
 	}
-	// else if (label == _setChanNumValue)
-	// {
-	// 	int v = label->getText().getIntValue();
-	// 	_node->setNumChannels(v);
-	// }
-	return;
 }
 
 float ADSingleEditor::sampleRate() {
@@ -137,5 +123,18 @@ void ADSingleEditor::buttonEvent(Button* button) {
 			_deviceLabel->setText(String(deviceName),NotificationType::dontSendNotification);
 		}
 	}
+}
 
+void ADSingleEditor::startAcquisition() {
+	for (std::vector<Component *>::iterator itr = _inputComponents.begin();
+		itr != _inputComponents.end(); ++itr) {
+			(*itr)->setEnabled(false);
+		}
+}
+
+void ADSingleEditor::stopAcquisition() {
+	for (std::vector<Component *>::iterator itr = _inputComponents.begin();
+		itr != _inputComponents.end(); ++itr) {
+			(*itr)->setEnabled(true);
+		}
 }

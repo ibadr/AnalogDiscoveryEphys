@@ -35,8 +35,7 @@ ADSingle Editor
 
 */
 
-class ADSingleEditor : public GenericEditor, public Label::Listener
-{
+class ADSingleEditor : public GenericEditor, public Label::Listener {
 public:
 
 	/** The class constructor, used to initialize any members. */
@@ -52,10 +51,10 @@ public:
 	void buttonEvent(Button* button);
 
 	/** Called to inform the editor that acquisition is about to start*/
-	//void startAcquisition();
+	void startAcquisition();
 
 	/** Called to inform the editor that acquisition has just stopped*/
-	//void stopAcquisition();
+	void stopAcquisition();
 
 	/** Called whenever there is a change in the signal chain or it refreshes.
 		It's called after the processors' same named method.
@@ -74,6 +73,7 @@ private:
 	ScopedPointer<Label> _sampleRateValue;
 	ScopedPointer<Label> _scaleFLabel;
 	ScopedPointer<Label> _scaleFValue;
+	std::vector<Component *> _inputComponents;
 
 	bool _deviceOpen;
 
