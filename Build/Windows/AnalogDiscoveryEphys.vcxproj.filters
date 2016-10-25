@@ -24,13 +24,25 @@
     <ClCompile Include="..\..\..\..\Source\Plugins\AnalogDiscoveryEphys\OpenEphysLib.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Plugins\AnalogDiscoveryEphys\Source\ADSpikeStim.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Plugins\AnalogDiscoveryEphys\Source\ADSpikeStimEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\Source\Plugins\AnalogDiscoveryEphys\Source\ADSpikeStim.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Source\Plugins\AnalogDiscoveryEphys\Source\ADSpikeStimEditor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\Source\Plugins\AnalogDiscoveryEphys\Source\ADSingleEditor.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\Source\Plugins\AnalogDiscoveryEphys\Source\ADSingleThread.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
