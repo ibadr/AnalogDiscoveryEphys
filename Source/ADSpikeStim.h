@@ -71,8 +71,13 @@ public:
   */
   //void updateSettings();
 
+  /** Called immediately prior to the start of data acquisition. */
+  bool enable();
+
 private:
   bool _deviceOpen;
+  int _spikeCh;
+  int _spikeSort;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ADSpikeStim);
 

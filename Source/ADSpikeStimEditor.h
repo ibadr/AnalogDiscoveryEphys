@@ -52,6 +52,8 @@ public:
   //void updateSettings();
 
   bool isNodeEnabled();
+  int channelNum();
+  int sortNum();
 
 private:
   //Always use JUCE RAII classes instead of pure pointers.

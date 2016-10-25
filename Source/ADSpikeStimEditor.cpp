@@ -100,3 +100,11 @@ void ADSpikeStimEditor::stopAcquisition() {
 bool ADSpikeStimEditor::isNodeEnabled() {
   return _enableButton->getToggleState();
 }
+
+int ADSpikeStimEditor::channelNum() {
+  return _chNumValue->getText().getIntValue();
+}
+
+int ADSpikeStimEditor::sortNum() {
+  return _sortNumValue->getText().getIntValue();
+}

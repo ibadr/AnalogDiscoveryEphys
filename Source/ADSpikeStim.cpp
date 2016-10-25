@@ -26,7 +26,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "../../Processors/Visualization/SpikeObject.h"
 
-ADSpikeStim::ADSpikeStim() : GenericProcessor("ADSpikeStim"), _deviceOpen(false) {
+ADSpikeStim::ADSpikeStim() : GenericProcessor("ADSpikeStim"), _deviceOpen(false),
+  _spikeCh(0), _spikeSort(1) {
 
 }
 
@@ -74,6 +75,12 @@ bool ADSpikeStim::isReady() {
   return _deviceOpen;
 }
 
+bool ADSpikeStim::enable() {
+  _spikeCh = static_cast<ADSpikeStimEditor*>(editor.get())->channelNum()-1;
+  _spikeSort = static_cast<ADSpikeStimEditor*>(editor.get())->sortNum();
+  return true;
+}
+
 void ADSpikeStim::process(AudioSampleBuffer& /*buffer*/, MidiBuffer& events) {
   if (static_cast<ADSpikeStimEditor*>(editor.get())->isNodeEnabled()) {
     checkForEvents(events); // automatically calls handleEvent
@@ -90,7 +97,7 @@ void ADSpikeStim::handleEvent(int eventType, MidiMessage& event, int /*sampleNum
       bool isValid = unpackSpike(&newSpike, dataptr, bufferSize);
       if (isValid) {
         int hdwf = WAW::instance().hdwfDevice(0); int ch = 0;
-        if (newSpike.channel == 0 && newSpike.sortedId == 1) {
+        if (newSpike.channel == _spikeCh && newSpike.sortedId == _spikeSort) {
           FDwfAnalogOutConfigure(hdwf, ch, true); // run stim once
         }
       }
