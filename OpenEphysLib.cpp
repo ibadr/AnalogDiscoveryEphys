@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <PluginInfo.h>
 #include "Source/ADSingleThread.h"
 #include "Source/ADSpikeStim.h"
+#include "Source/ADSupply.h"
 #include <string>
 #ifdef WIN32
 #include <Windows.h>
@@ -34,7 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace Plugin;
 //Number of plugins defined on the library. Can be of different types (Processors, RecordEngines, etc...)
-#define NUM_PLUGINS 2
+#define NUM_PLUGINS 3
 
 extern "C" EXPORT void getLibInfo(Plugin::LibraryInfo* info) {
 	info->apiVersion = PLUGIN_API_VER; /*API version, defined by the GUI source.
@@ -59,6 +60,13 @@ extern "C" EXPORT int getPluginInfo(int index, Plugin::PluginInfo* info) {
 			info->processor.name = "ADSpikeStim"; //Processor name shown in the GUI
 			info->processor.type = Plugin::SinkProcessor; //Type of processor. Can be FilterProcessor, SourceProcessor, SinkProcessor or UtilityProcessor. Specifies where on the processor list will appear
 			info->processor.creator = &(Plugin::createProcessor<ADSpikeStim>);
+			break;
+		case 2:
+			info->type = Plugin::ProcessorPlugin; //Type of plugin. See "Source/Processors/PluginManager/OpenEphysPlugin.h" for complete info about the different type structures
+			//For processor
+			info->processor.name = "ADSupply"; //Processor name shown in the GUI
+			info->processor.type = Plugin::SinkProcessor; //Type of processor. Can be FilterProcessor, SourceProcessor, SinkProcessor or UtilityProcessor. Specifies where on the processor list will appear
+			info->processor.creator = &(Plugin::createProcessor<ADSupply>);
 			break;
 		default:
 			return -1;
