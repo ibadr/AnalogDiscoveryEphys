@@ -143,12 +143,16 @@
     <ClCompile Include="..\..\..\..\Source\Plugins\AnalogDiscoveryEphys\Source\ADSingleThread.cpp" />
     <ClCompile Include="..\..\..\..\Source\Plugins\AnalogDiscoveryEphys\Source\ADSpikeStim.cpp" />
     <ClCompile Include="..\..\..\..\Source\Plugins\AnalogDiscoveryEphys\Source\ADSpikeStimEditor.cpp" />
+    <ClCompile Include="..\..\..\..\Source\Plugins\AnalogDiscoveryEphys\Source\ADSupply.cpp" />
+    <ClCompile Include="..\..\..\..\Source\Plugins\AnalogDiscoveryEphys\Source\ADSupplyEditor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\Source\Plugins\AnalogDiscoveryEphys\Source\ADSingleEditor.h" />
     <ClInclude Include="..\..\..\..\Source\Plugins\AnalogDiscoveryEphys\Source\ADSingleThread.h" />
     <ClInclude Include="..\..\..\..\Source\Plugins\AnalogDiscoveryEphys\Source\ADSpikeStim.h" />
     <ClInclude Include="..\..\..\..\Source\Plugins\AnalogDiscoveryEphys\Source\ADSpikeStimEditor.h" />
+    <ClInclude Include="..\..\..\..\Source\Plugins\AnalogDiscoveryEphys\Source\ADSupply.h" />
+    <ClInclude Include="..\..\..\..\Source\Plugins\AnalogDiscoveryEphys\Source\ADSupplyEditor.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

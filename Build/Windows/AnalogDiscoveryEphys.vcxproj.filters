@@ -30,6 +30,12 @@
     <ClCompile Include="..\..\..\..\Source\Plugins\AnalogDiscoveryEphys\Source\ADSpikeStimEditor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Plugins\AnalogDiscoveryEphys\Source\ADSupply.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Source\Plugins\AnalogDiscoveryEphys\Source\ADSupplyEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\Source\Plugins\AnalogDiscoveryEphys\Source\ADSpikeStim.h">
@@ -42,6 +48,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\Source\Plugins\AnalogDiscoveryEphys\Source\ADSingleThread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Source\Plugins\AnalogDiscoveryEphys\Source\ADSupply.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Source\Plugins\AnalogDiscoveryEphys\Source\ADSupplyEditor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
