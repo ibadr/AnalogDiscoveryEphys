@@ -22,21 +22,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "ADSupplyEditor.h"
 
+#include "../WAW/waw.h"
+
 ADSupplyEditor::ADSupplyEditor(GenericProcessor* parentNode, bool useDefaultParameterEditors = false)
   : GenericEditor(parentNode, useDefaultParameterEditors) {
     desiredWidth = 150;
 
     initEditor();
+    int count = WAW::instance().enumDevices(enumfilterAll);
+    _deviceOpen = WAW::instance().openDevice(0);
 }
 
 ADSupplyEditor::~ADSupplyEditor() {
-
+  if (_deviceOpen)
+    WAW::instance().closeDevice(0);
 }
 
 void ADSupplyEditor::initEditor() {
   _enableButton = new ToggleButton("ENABLE");
   _enableButton->setBounds(10, 31, 60, 20); //Set position and size (X, Y, XSize, YSize)
-  _enableButton->setTooltip("Enable stimulator output.");
+  _enableButton->setTooltip("Enable power supply output.");
   _enableButton->addListener(this);
   addAndMakeVisible(_enableButton);
 
@@ -80,7 +85,22 @@ void ADSupplyEditor::labelTextChanged(Label* label) {
 }
 
 void ADSupplyEditor::buttonEvent(Button* button) {
-
+  if (button == _enableButton) {
+    if (!_deviceOpen)
+      _deviceOpen = WAW::instance().openDevice(0);
+    if (_deviceOpen) {
+      int hdwf = WAW::instance().hdwfDevice(0);
+      if (_enableButton->getToggleState()) {
+        FDwfAnalogIOChannelNodeSet(hdwf, 0, 0, 1);
+        FDwfAnalogIOChannelNodeSet(hdwf, 0, 1, _posVoltValue->getText().getFloatValue());
+        FDwfAnalogIOChannelNodeSet(hdwf, 1, 0, 1);
+        FDwfAnalogIOChannelNodeSet(hdwf, 1, 1, _negVoltValue->getText().getFloatValue());
+        FDwfAnalogIOEnableSet(hdwf, 1);
+      } else {
+        FDwfAnalogIOEnableSet(hdwf, 0);
+      }
+    }
+  }
 }
 
 void ADSupplyEditor::startAcquisition() {

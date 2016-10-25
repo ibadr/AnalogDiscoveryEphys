@@ -62,8 +62,6 @@ private:
   ScopedPointer<Label> _sortNumValue;
   std::vector<Component *> _inputComponents;
 
-  bool _deviceOpen;
-
   void initEditor();
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ADSpikeStimEditor);

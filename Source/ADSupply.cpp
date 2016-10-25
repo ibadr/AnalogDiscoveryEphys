@@ -22,7 +22,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "ADSupply.h"
 #include "ADSupplyEditor.h"
-#include "../WAW/waw.h"
 
 #include "../../Processors/Visualization/SpikeObject.h"
 
