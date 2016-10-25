@@ -96,3 +96,7 @@ void ADSpikeStimEditor::stopAcquisition() {
       (*itr)->setEnabled(true);
   }
 }
+
+bool ADSpikeStimEditor::isNodeEnabled() {
+  return _enableButton->getToggleState();
+}

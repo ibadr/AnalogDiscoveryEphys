@@ -51,6 +51,8 @@ public:
   */
   //void updateSettings();
 
+  bool isNodeEnabled();
+
 private:
   //Always use JUCE RAII classes instead of pure pointers.
   ScopedPointer<Button> _enableButton;
